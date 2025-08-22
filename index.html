@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Research Paper Analyzer</h1>
+        
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="pdfInput" accept=".pdf" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Analyze PDF</button>
+                </form>
+                
+                <div id="results" class="mt-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Analyzing document...</span>
+                </div>
+                
+                <div id="output" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('pdfInput');
+            const resultsDiv = document.getElementById('results');
+            const outputDiv = document.getElementById('output');
+            
+            resultsDiv.style.display = 'block';
+            outputDiv.innerHTML = '';
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                resultsDiv.style.display = 'none';
+                
+                if (data.error) {
+                    outputDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    return;
+                }
+                
+                outputDiv.innerHTML = `
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary text-white">Summary</div>
+                        <div class="card-body">${data.summary}</div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">Key Insights</div>
+                        <div class="card-body">${data.insights}</div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white">Scientific Terms</div>
+                        <div class="card-body">${data.terms}</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-warning">Paper Score</div>
+                        <div class="card-body">
+                            <h2 class="text-center">${data.score}/50</h2>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.style.display = 'none';
+                outputDiv.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
