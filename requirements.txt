@@ -1,0 +1,25 @@
+# Core
+streamlit==1.41.1
+pandas==2.2.3
+matplotlib==3.10.0
+plotly==5.24.1
+wordcloud==1.9.4
+PyMuPDF==1.25.2
+requests==2.32.3
+tqdm==4.67.1
+
+# NLP + ML
+scikit-learn==1.6.1
+transformers==4.47.1
+torch==2.5.1
+torchvision==0.20.1
+sentencepiece==0.2.0
+rake-nltk==1.0.6
+textstat==0.7.4
+yake==0.4.8
+joblib==1.4.2
+
+# Vector + Embeddings + Gemini
+chromadb==0.5.7
+sentence-transformers==3.2.1
+google-generativeai==0.8.3
